@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		 <meta charset="utf-8" />
+		 <title>Neural Automata</title>
+		 <link rel="stylesheet" href="./style.css">
+	</head>
+	<body>
+		<h1>Neural Cellular Automata</h1>
+		<canvas id="myCanvas" width="400" height="400"></canvas>
+		<br>
+			<p>Options</p>
+			<div class="sliders">
+				<p>Start?</p>
+				<input type="checkbox" id="startGame" name="startGame" value="false">
+				<p>Clear?</p>
+				<button type="button" id="drawClear" name="drawClear">Yes.</button>
+				<p>Fill Random?</p>
+				<button type="button" id="fillRandom" name="fillRandom">Yes.</button>
+				<p>Max Speed: <span id="speedDisplay"></span></p>
+				<input type="range" min="0" max="100" value="0" id="maxSpeed">
+			</div>
+			<br><br>
+			<p>Canvas Settings</p>
+			<div class="sliders">
+				<p>Canvas Width: <span id="widthDisplay"></span></p>
+				<input type="range" min="100" max="1600" value="400" id="maxWidth" step="10">
+				<p>Canvas Height: <span id="heightDisplay"></span></p>
+				<input type="range" min="100" max="900" value="400" id="maxHeight" step="10">
+			</div>
+			<br><br>
+			<p>Weight Values</p>
+			<div class="inputs">
+				<input type="text" id="weight1" size="5">
+				<input type="text" id="weight2" size="5">
+				<input type="text" id="weight3" size="5">
+				<input type="text" id="weight4" size="5">
+				<input type="text" id="weight5" size="5">
+				<input type="text" id="weight6" size="5">
+				<input type="text" id="weight7" size="5">
+				<input type="text" id="weight8" size="5">
+				<input type="text" id="weight9" size="5">
+			</div>
+			<button type="button" id="weightSubmit">Submit.</button>
+			<button type="button" id="randomWeight">Random.</button>
+			<div id="radios" class="radios">
+				<input type="radio" id="ac" name="activation" value="0"><p>Identity</p>
+				<input type="radio" id="ac" name="activation" value="1"><p>Sin</p>
+				<input type="radio" id="ac" name="activation" value="2"><p>Pow</p>
+				<input type="radio" id="ac" name="activation" value="3"><p>Absolute</p>
+				<input type="radio" id="ac" name="activation" value="4"><p>Tanh</p>
+				<input type="radio" id="ac" name="activation" value="5"><p>Gaussian</p>
+				<input type="radio" id="ac" name="activation" value="6"><p>Inv Gaussian</p>
+			</div>
+			<p>Color</p>
+			<div class="sliders">
+				<p>Red</p>
+				<input type="range" min="0" max="255" value="128" id="red" step="1">
+				<p>Green</p>
+				<input type="range" min="0" max="255" value="128" id="green" step="1">
+				<p>Blue</p>
+				<input type="range" min="0" max="255" value="128" id="blue" step="1">
+			</div>
+		<script src="./script.js" onload="init()"></script>
+	</body>
+</html>
