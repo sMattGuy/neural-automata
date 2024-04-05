@@ -214,35 +214,22 @@ function createArray(){
 let FPS = 0;
 let recentFPS = 0;
 let timePassed = 0;
-var frames = {
-	speed: 17,
-	max: -1,
-	timer: '',
-	run: function (func) {
-		this.timer = setInterval(func, this.speed);
-	},
-	start: function (func, speed = 17) {
-		this.speed = speed;
-		this.run(func);
-	}
-}
+let speedCount = 0;
 //this is what loops the frames indefinietly
-async function doFrames() {
-	let speedCount = 0;
-	frames.start(() => {
+function doFrames() {
+	if(speedCount >= SPEED){
 		if(Date.now() - timePassed > 1000){
 			recentFPS = FPS;
 			FPS = 0;
 			timePassed = Date.now();
 		}
 		FPS++;
+		updateGrid();
 		draw();
-		if(START && speedCount >= SPEED){
-			updateGrid();
-			speedCount = 0;
-		}
-		speedCount++;
-	}, frames.speed);
+		speedCount = 0;
+	}
+	speedCount++;
+	window.requestAnimationFrame(doFrames);
 }
 
 /*
@@ -280,131 +267,17 @@ function updateGrid(){
 		for(let j=0;j<drawArray[i].length;j++){
 			//update for wrapping and using weights
 			let value = 0;
-			//top left
-			if(i-1<0){
-				//take value on end of i
-				if(j-1<0){
-					//i and j oob
-					value += drawArray[drawArray.length-1][drawArray[i].length-1].exists * weight[0];
-				}
-				else{
-					//i oob
-					value += drawArray[drawArray.length-1][j-1].exists * weight[0];
-				}
-			}
-			else{
-				if(j-1<0){
-					//j 00b
-					value += drawArray[i-1][drawArray[i].length-1].exists * weight[0];
-				}
-				else{
-					//normal
-					value += drawArray[i-1][j-1].exists * weight[0];
-				}
-			}
-			//top mid
-			if(j-1<0){
-				//j oob
-				value += drawArray[i][drawArray[i].length-1].exists * weight[1];
-			}
-			else{
-				//normal
-				value += drawArray[i][j-1].exists * weight[1];
-			}
-			//top right
-			if(i+1 >= drawArray.length){
-				//i oob
-				if(j-1 < 0){
-					//i and j oob
-					value += drawArray[0][drawArray[i].length-1].exists * weight[2];
-				}
-				else{
-					//i oob
-					value += drawArray[0][j-1].exists * weight[2];
-				}
-			}
-			else{
-				if(j-1<0){
-					value += drawArray[i][drawArray[i].length-1].exists * weight[2];
-				}
-				else{
-					//normal
-					value += drawArray[i+1][j-1].exists * weight[2];
-				}
-			}
-			//mid left
-			if(i-1<0){
-				//i oob
-				value += drawArray[drawArray.length-1][j].exists * weight[3];
-			}
-			else{
-				//normal
-				value += drawArray[i-1][j].exists * weight[3];
-			}
-			//mid
-			value += drawArray[i][j].exists * weight[4];
-			//mid right
-			if(i+1 >= drawArray.length){
-				//i oob
-				value += drawArray[0][j].exists * weight[5];
-			}
-			else{
-				//normal
-				value += drawArray[i+1][j].exists * weight[5];
-			}
-			//bottom left
-			if(i-1<0){
-				//i oob
-				if(j+1>=drawArray[i].length){
-					//i and j oob
-					value += drawArray[drawArray.length-1][0].exists * weight[6];
-				}
-				else{
-					//i oob
-					value += drawArray[drawArray.length-1][j+1].exists * weight[6];
-				}
-			}
-			else{
-				if(j+1>=drawArray[i].length){
-					//j oob
-					value += drawArray[i-1][0].exists * weight[6];
-				}
-				else{
-					//normal
-					value += drawArray[i-1][j+1].exists * weight[6];
-				}
-			}
-			//bottom middle
-			if(j+1 >= drawArray[i].length){
-				//j oob
-				value += drawArray[i][0].exists * weight[7];
-			}
-			else{
-				//normal
-				value += drawArray[i][j+1].exists * weight[7];
-			}
-			//bottom right
-			if(i+1 >= drawArray.length){
-				//i oob
-				if(j+1 >= drawArray[i].length){
-					//i and j oob
-					value += drawArray[0][0].exists * weight[8];
-				}
-				else{
-					value += drawArray[0][j+1].exists * weight[8];
-				}
-			}
-			else{
-				if(j+1 >= drawArray[i].length){
-					//j oob
-					value += drawArray[i+1][0].exists * weight[8];
-				}
-				else{
-					//normal
-					value += drawArray[i+1][j+1].exists * weight[8];
-				}
-			}
-			
+
+			value += drawArray[(i-1+drawArray.length)%drawArray.length][(j-1+drawArray[i].length)%drawArray[i].length].exists * weight[0]; // top left
+			value += drawArray[i][(j-1+drawArray[i].length)%drawArray[i].length].exists * weight[1]; // top mid
+			value += drawArray[(i+1+drawArray.length)%drawArray.length][(j-1+drawArray[i].length)%drawArray[i].length].exists * weight[2]; // top right
+			value += drawArray[(i-1+drawArray.length)%drawArray.length][j].exists * weight[3]; // right
+			value += drawArray[i][j].exists * weight[4]
+			value += drawArray[(i+1+drawArray.length)%drawArray.length][j].exists * weight[5]; // left
+			value += drawArray[(i-1+drawArray.length)%drawArray.length][(j+1+drawArray[i].length)%drawArray[i].length].exists * weight[6]; // bot left
+			value += drawArray[i][(j+1+drawArray[i].length)%drawArray[i].length].exists * weight[7]; // bot mid
+			value += drawArray[(i+1+drawArray.length)%drawArray.length][(j+1+drawArray[i].length)%drawArray[i].length].exists * weight[8]; // bot right
+
 			//end of cell
 			value = activate(value, acType);
 			if(value > 1.0){
