@@ -4,6 +4,40 @@ const ctx = canvas.getContext("2d");
 let time_passed = 0;
 let weight = [ 0.3,-0.2, 0.7,-0.3, 1.0, 0.2,-0.4, 0.1,-0.6];
 
+// activation information
+let activation_type = 0;
+let max_activation = 7;
+let activation_names = ['Identity','Sine','Power','Absolute','Tangent','Gaussian','Inv Gaussian']
+document.addEventListener('keypress', e => {
+    const keyname = e.code
+    if(keyname == 'Digit1'){
+        activation_type = (activation_type - 1 + max_activation) % max_activation;
+        document.getElementById('activation_text').innerHTML = `Type: ${activation_names[activation_type]}`;
+        fadeOut();
+    }
+    else if(keyname == 'Digit2'){
+        activation_type = (activation_type + 1 + max_activation) % max_activation;
+        document.getElementById('activation_text').innerHTML = `Type: ${activation_names[activation_type]}`;
+        fadeOut();
+    }
+});
+function fadeOut(){
+    let text = document.getElementById('activation_text')
+    text.style.opacity = 1;
+    let time = 0;
+    let total_time = 1000;
+    let fade_interval = setInterval(fade, 200);
+    function fade(){
+        let text = document.getElementById('activation_text');
+        let time_change = time/total_time;
+        let new_opacity = Math.pow(-time_change,3)+1;
+        text.style.opacity = new_opacity;
+        time += 200;
+        if(new_opacity <= 0){
+            clearInterval(fade_interval);
+        }
+    }
+}
 // color information
 let current_rgb = {
     'r':Math.floor(Math.random()*255),
@@ -88,6 +122,8 @@ function update_cells(){
             value += cells[i][(j+1+cells.length)%cells.length].value * weight[7] // bottom center
             value += cells[(i+1+cells.length)%cells.length][(j+1+cells.length)%cells.length].value * weight[8] // bottom right
             
+            value = activate(value, activation_type);
+
             if(value > 1) value = 1;
             else if(value < 0) value = 0;
             value = Math.round(value*100)/100;
@@ -136,4 +172,28 @@ function frame(){
         time_passed = 0;
     }
     window.requestAnimationFrame(frame);
+}
+
+function activate(x, type){
+	if(type == 0){
+		return x;
+	}
+	else if(type == 1){
+		return Math.sin(x);
+	}
+	else if(type == 2){
+		return Math.pow(x,2.0);
+	}
+	else if(type == 3){
+		return Math.abs(x);
+	}
+	else if(type == 4){
+		return Math.tanh(x);
+	}
+	else if(type == 5){
+		return 1.0/Math.pow(2.0,(Math.pow(x,2.0)));
+	}
+	else if(type == 6){
+		return -1.0/Math.pow(2.0,(0.6 * Math.pow(x,2.0)))+1.0;
+	}
 }
